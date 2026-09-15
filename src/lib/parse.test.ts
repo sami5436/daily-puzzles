@@ -109,6 +109,18 @@ describe('wend, patches and mini sudoku', () => {
     expect(games).toEqual(['wend', 'patches', 'minisudoku']);
   });
 
+  it('does not let one game borrow the clock belonging to the next', () => {
+    // A header with no score of its own sits directly above another game.
+    const parsed = parseShareText('Zip #546\nWend #98 | 0:19');
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0]).toMatchObject({ game: 'wend', seconds: 19 });
+  });
+
+  it('still reads a score that genuinely wrapped onto the next line', () => {
+    const [r] = parseShareText('Zip #546\n0:19 \u{1f3c1}');
+    expect(r).toMatchObject({ game: 'zip', puzzleNumber: 546, seconds: 19 });
+  });
+
   it('ignores the trailing lnkd.in lines', () => {
     expect(parseShareText('lnkd.in/wend\nlnkd.in/patches\nlnkd.in/minisudoku')).toEqual([]);
   });

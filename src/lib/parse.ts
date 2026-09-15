@@ -81,8 +81,11 @@ export function parseShareText(input: string): ParsedResult[] {
     if (!game) continue;
 
     // Some shares wrap the time or the hint count onto the next line, so give
-    // every matcher one line of lookahead.
-    const scope = `${line} ${lines[i + 1] ?? ''}`;
+    // every matcher one line of lookahead. Never look past a line that starts
+    // another game, or a header with no score of its own would steal the next
+    // game's clock and store it as a real result.
+    const next = lines[i + 1] ?? '';
+    const scope = matchGame(next) ? line : `${line} ${next}`;
     const result: ParsedResult = { game, raw: line.trim(), ...blank() };
 
     switch (game) {
