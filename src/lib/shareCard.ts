@@ -28,6 +28,15 @@ const SANS =
 
 const font = (size: number, weight = 400) => `${weight} ${size}px ${SANS}`;
 
+/** The four square logo, same arrangement as the favicon and the app header. */
+function mark(c: CanvasRenderingContext2D, x: number, y: number, q: number, gap: number) {
+  const colours = [INK, P1, P2, INK];
+  colours.forEach((colour, i) => {
+    c.fillStyle = colour;
+    c.fillRect(x + (i % 2) * (q + gap), y + Math.floor(i / 2) * (q + gap), q, q);
+  });
+}
+
 function rule(c: CanvasRenderingContext2D, y: number, colour = RULE, width = 2) {
   c.strokeStyle = colour;
   c.lineWidth = width;
@@ -57,16 +66,18 @@ export function drawShareCard(canvas: HTMLCanvasElement, input: ShareCardInput):
   c.fillRect(0, 0, W, H);
   c.textBaseline = 'alphabetic';
 
+  mark(c, M, 56, 26, 7);
+
   c.fillStyle = INK;
   c.font = font(58, 600);
   c.textAlign = 'left';
-  c.fillText('Daily Puzzles', M, 140);
+  c.fillText('Daily Puzzles', M, 212);
 
   c.fillStyle = MUTED;
   c.font = font(30);
-  c.fillText(dateLabel, M, 190);
+  c.fillText(dateLabel, M, 258);
 
-  rule(c, 232);
+  rule(c, 300);
 
   // Column headers. Names are right aligned over their score column.
   const col1 = W - M - 230;
@@ -75,9 +86,9 @@ export function drawShareCard(canvas: HTMLCanvasElement, input: ShareCardInput):
   c.font = font(26, 600);
   c.textAlign = 'right';
   c.fillStyle = P1;
-  c.fillText(p1.name.toUpperCase(), col1, 288);
+  c.fillText(p1.name.toUpperCase(), col1, 356);
   c.fillStyle = P2;
-  c.fillText(p2.name.toUpperCase(), col2, 288);
+  c.fillText(p2.name.toUpperCase(), col2, 356);
 
   const games = row?.games ?? [];
 
@@ -85,10 +96,10 @@ export function drawShareCard(canvas: HTMLCanvasElement, input: ShareCardInput):
     c.textAlign = 'left';
     c.fillStyle = MUTED;
     c.font = font(32);
-    c.fillText('Nothing logged yet.', M, 380);
+    c.fillText('Nothing logged yet.', M, 448);
   }
 
-  let y = 348;
+  let y = 416;
   const step = 62;
 
   for (const g of games) {

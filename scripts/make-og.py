@@ -25,24 +25,35 @@ img = Image.new("RGB", (W, H), BG)
 d = ImageDraw.Draw(img)
 
 M = 88
-d.text((M, 112), "Daily Puzzles", font=font(78, "Semibold"), fill=TEXT)
-d.text((M, 214), "Wordle, Strands and the LinkedIn puzzles.",
-       font=font(34), fill=MUTED)
-d.text((M, 260), "Two players, one scoreboard.", font=font(34), fill=MUTED)
 
-d.line([(M, 352), (W - M, 352)], fill=RULE, width=2)
+
+def mark(d, x, y, q, gap):
+    """The four square logo, same arrangement as the favicon."""
+    for i, colour in enumerate((TEXT, P1, P2, TEXT)):
+        cx = x + (i % 2) * (q + gap)
+        cy = y + (i // 2) * (q + gap)
+        d.rectangle([cx, cy, cx + q, cy + q], fill=colour)
+
+
+mark(d, M, 66, 24, 7)
+
+d.text((M, 150), "Daily Puzzles", font=font(74, "Semibold"), fill=TEXT)
+d.text((M, 250), "Wordle, Strands and the LinkedIn puzzles.", font=font(33), fill=MUTED)
+d.text((M, 294), "Two players, one scoreboard.", font=font(33), fill=MUTED)
+
+d.line([(M, 378), (W - M, 378)], fill=RULE, width=2)
 
 # A few sample rows so the card reads as a scoreboard at a glance.
 rows = [("Wordle", "4/6", "3/6", P2), ("Queens", "0:42", "1:05", P1), ("Zip", "0:31", "0:28", P2)]
-label_f, score_f = font(34), font(34, "Semibold")
-y = 400
+label_f, score_f = font(33), font(33, "Semibold")
+y = 420
 for name, a, b, winner in rows:
     d.text((M, y), name, font=label_f, fill=TEXT)
     ca = P1 if winner == P1 else MUTED
     cb = P2 if winner == P2 else MUTED
     d.text((W - M - 320, y), a, font=score_f, fill=ca, anchor="la")
     d.text((W - M, y), b, font=score_f, fill=cb, anchor="ra")
-    y += 62
+    y += 60
 
 img.save("public/og.png", optimize=True)
 

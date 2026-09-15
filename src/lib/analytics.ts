@@ -115,3 +115,90 @@ export function summarise(results: StoredResult[], days: DayRow[], standings: St
 }
 
 export const gameLabel = (id: GameId) => gameMeta(id).label;
+
+export interface MarginPoint {
+  game: GameId;
+  date: string;
+  margin: number;
+}
+
+/** Every individual head to head as a signed margin, for the distribution. */
+export function allMargins(days: DayRow[]): MarginPoint[] {
+  const out: MarginPoint[] = [];
+  for (const day of days) {
+    for (const cell of day.games) {
+      if (!cell.a || !cell.b) continue;
+      const va = metricValue(cell.a);
+      const vb = metricValue(cell.b);
+      if (va == null || vb == null) continue;
+      out.push({ game: cell.game, date: day.date, margin: relativeMargin(va, vb) });
+    }
+  }
+  return out;
+}
+
+export interface Rating {
+  date: string;
+  a: number;
+  b: number;
+}
+
+const START = 1500;
+const K = 24;
+
+/**
+ * An Elo rating updated on every head to head.
+ *
+ * Elo is built for large pools of players over long records. Two people over a
+ * handful of days is not that, so this is a curiosity rather than a measurement.
+ * It is computed the standard way regardless.
+ */
+export function ratings(days: DayRow[]): Rating[] {
+  let a = START;
+  let b = START;
+  return [...days]
+    .sort((x, y) => x.date.localeCompare(y.date))
+    .map((day) => {
+      for (const cell of day.games) {
+        if (!cell.a || !cell.b) continue;
+        const expected = 1 / (1 + 10 ** ((b - a) / 400));
+        const score = cell.outcome === 'p1' ? 1 : cell.outcome === 'p2' ? 0 : 0.5;
+        const delta = K * (score - expected);
+        a += delta;
+        b -= delta;
+      }
+      return { date: day.date, a, b };
+    });
+}
+
+/** Share of each game's head to head, 0 to 1, for the radar. */
+export function strengthProfile(days: DayRow[]): { game: GameId; label: string; a: number; b: number }[] {
+  return marginByGame(days)
+    .filter((m) => m.margin !== null)
+    .map((m) => {
+      const share = (1 + (m.margin ?? 0)) / 2;
+      return { game: m.game, label: m.label, a: share, b: 1 - share };
+    });
+}
+
+export interface Cell {
+  game: GameId;
+  date: string;
+  outcome: 'p1' | 'p2' | 'tie' | 'none';
+}
+
+/** Outcome grid for the heatmap: every game against every logged day. */
+export function outcomeGrid(days: DayRow[]): { dates: string[]; games: GameId[]; cells: Cell[] } {
+  const dates = [...days].map((d) => d.date).sort();
+  const games = GAMES.map((g) => g.id).filter((id) =>
+    days.some((d) => d.games.some((c) => c.game === id)),
+  );
+  const cells: Cell[] = [];
+  for (const day of days) {
+    for (const id of games) {
+      const cell = day.games.find((c) => c.game === id);
+      cells.push({ game: id, date: day.date, outcome: cell ? cell.outcome : 'none' });
+    }
+  }
+  return { dates, games, cells };
+}

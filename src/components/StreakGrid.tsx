@@ -12,8 +12,7 @@ export function StreakGrid({ p1, p2, standings }: { p1: Player; p2: Player; stan
   const b = standings.streak.b;
 
   return (
-    <section>
-      <h2>Last eight weeks</h2>
+    <>
       <div className="grid">
         {days.map((d) => {
           const inA = a.playedDates.has(d);
@@ -30,6 +29,6 @@ export function StreakGrid({ p1, p2, standings }: { p1: Player; p2: Player; stan
       <p className="note num" style={{ marginTop: 12 }}>
         {p1.name}: {a.current} now, {a.longest} best · {p2.name}: {b.current} now, {b.longest} best
       </p>
-    </section>
+    </>
   );
 }

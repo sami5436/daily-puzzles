@@ -9,11 +9,12 @@ export function GameStats({ p1, p2, standings }: { p1: Player; p2: Player; stand
     return s.aBest != null || s.bBest != null;
   });
 
-  if (played.length === 0) return null;
+  if (played.length === 0) {
+    return <p className="note">Nothing played by both of you yet.</p>;
+  }
 
   return (
-    <section>
-      <h2>By game</h2>
+    <>
       <div className="scroller">
         <table>
           <thead>
@@ -49,6 +50,6 @@ export function GameStats({ p1, p2, standings }: { p1: Player; p2: Player; stand
       <p className="note" style={{ marginTop: 10 }}>
         Record counts only days you both played the same game.
       </p>
-    </section>
+    </>
   );
 }
