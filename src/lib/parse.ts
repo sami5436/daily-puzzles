@@ -10,29 +10,50 @@ import type { GameId, ParsedResult } from './types';
  * because a wrong score logged silently is worse than a missing one.
  */
 
-const GAME_LINE =
-  /^\s*[^A-Za-z]{0,4}(wordle|strands|queens|tango|zip|pinpoint|crossclimb)\b/i;
+/**
+ * How each game names itself at the start of its share text. Some names are two
+ * words, so the pattern cannot be derived from the game id.
+ */
+const NAME: Record<GameId, string> = {
+  wordle: 'wordle',
+  strands: 'strands',
+  queens: 'queens',
+  tango: 'tango',
+  zip: 'zip',
+  wend: 'wend',
+  patches: 'patches',
+  minisudoku: 'mini\\s*sudoku',
+  crossclimb: 'crossclimb',
+  pinpoint: 'pinpoint',
+};
 
-/** Matches "4:07", "0:42" and "1:02:33". Returns total seconds. */
+/** Up to four leading non-letters absorbs a stray emoji or bullet. */
+const header = (id: GameId) => new RegExp(`^\\s*[^A-Za-z]{0,4}${NAME[id]}\\b`, 'i');
+
+/** The game name followed by its puzzle number. */
+const numbered = (id: GameId) => new RegExp(`${NAME[id]}\\s*#?\\s*([\\d,]+)`, 'i');
+
+const HEADERS = (Object.keys(NAME) as GameId[]).map((id) => ({ id, re: header(id) }));
+
+/** Matches "4:07", "0:42" and "1:02:33". */
 const TIME = /(?:(\d{1,2}):)?(\d{1,3}):(\d{2})/;
+
+/** Wend and Patches both report hints as "with no hints" or "with 2 hints". */
+const HINTS = /with\s+(no|\d+)\s+hints?/i;
 
 const num = (s: string) => Number.parseInt(s.replace(/[,.\s]/g, ''), 10);
 
 function toSeconds(m: RegExpMatchArray): number {
   const [, h, a, b] = m;
-  return h
-    ? num(h) * 3600 + num(a!) * 60 + num(b!)
-    : num(a!) * 60 + num(b!);
+  return h ? num(h) * 3600 + num(a!) * 60 + num(b!) : num(a!) * 60 + num(b!);
 }
 
 function blank(): Omit<ParsedResult, 'game' | 'raw'> {
-  return {
-    puzzleNumber: null,
-    seconds: null,
-    guesses: null,
-    hints: null,
-    solved: true,
-  };
+  return { puzzleNumber: null, seconds: null, guesses: null, hints: null, solved: true };
+}
+
+function matchGame(line: string): GameId | null {
+  return HEADERS.find((h) => h.re.test(line))?.id ?? null;
 }
 
 /**
@@ -43,7 +64,7 @@ function strandsBlock(lines: string[], start: number): string[] {
   const block: string[] = [];
   for (let i = start + 1; i < lines.length && block.length < 10; i++) {
     const line = lines[i]!;
-    if (GAME_LINE.test(line)) break;
+    if (matchGame(line)) break;
     if (/[A-Za-z]{3}/.test(line) && !/^\s*["“]/.test(line)) break;
     block.push(line);
   }
@@ -56,12 +77,11 @@ export function parseShareText(input: string): ParsedResult[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!;
-    const header = GAME_LINE.exec(line);
-    if (!header) continue;
+    const game = matchGame(line);
+    if (!game) continue;
 
-    const game = header[1]!.toLowerCase() as GameId;
-    // LinkedIn sometimes wraps the time onto the next line. Give every matcher
-    // the header plus one line of lookahead so those still resolve.
+    // Some shares wrap the time or the hint count onto the next line, so give
+    // every matcher one line of lookahead.
     const scope = `${line} ${lines[i + 1] ?? ''}`;
     const result: ParsedResult = { game, raw: line.trim(), ...blank() };
 
@@ -80,38 +100,41 @@ export function parseShareText(input: string): ParsedResult[] {
       }
 
       case 'strands': {
-        const m = /strands\s*#?\s*([\d,]+)/i.exec(line);
+        const m = numbered('strands').exec(line);
         if (!m) continue;
         result.puzzleNumber = num(m[1]!);
-        const block = strandsBlock(lines, i).join('');
-        result.hints = (block.match(/\u{1F4A1}/gu) ?? []).length;
-        result.raw = [line, ...strandsBlock(lines, i)].join('\n').trim();
+        const block = strandsBlock(lines, i);
+        result.hints = (block.join('').match(/\u{1F4A1}/gu) ?? []).length;
+        result.raw = [line, ...block].join('\n').trim();
         break;
       }
 
       case 'pinpoint': {
-        const m = /pinpoint\s*#?\s*([\d,]+)/i.exec(line);
+        const m = numbered('pinpoint').exec(line);
         if (!m) continue;
         result.puzzleNumber = num(m[1]!);
-        const g = /\|\s*(\d+)\s*guess/i.exec(scope) ?? /(\d+)\s*guess/i.exec(scope);
+        const g = /(\d+)\s*guess/i.exec(scope);
         if (!g) continue;
         result.guesses = num(g[1]!);
         break;
       }
 
-      // Queens, Tango, Zip and Crossclimb all report a clock.
+      // Queens, Tango, Zip, Wend, Patches, Mini Sudoku and Crossclimb all
+      // report a clock.
       default: {
-        const m = new RegExp(`${game}\\s*#?\\s*([\\d,]+)`, 'i').exec(line);
+        const m = numbered(game).exec(line);
         if (m) result.puzzleNumber = num(m[1]!);
-        // Strip the puzzle number before hunting for a time, so "#123" cannot
-        // be misread as part of the clock.
-        const afterNumber = scope.replace(
-          new RegExp(`${game}\\s*#?\\s*[\\d,]+`, 'i'),
-          ' ',
-        );
+        // Strip the game name and puzzle number before hunting for a time, so
+        // "#123" cannot be misread as part of the clock.
+        const afterNumber = scope.replace(numbered(game), ' ');
         const t = TIME.exec(afterNumber);
         if (!t) continue;
         result.seconds = toSeconds(t);
+        // Wend and Patches also say how many hints were taken. Record it, but
+        // keep the clock as the metric: no sample of a hinted solve exists yet,
+        // so how it should weigh against a clean one is still unknown.
+        const h = HINTS.exec(scope);
+        if (h) result.hints = h[1]!.toLowerCase() === 'no' ? 0 : num(h[1]!);
         break;
       }
     }

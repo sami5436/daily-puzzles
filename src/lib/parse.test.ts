@@ -74,6 +74,46 @@ describe('pinpoint', () => {
   });
 });
 
+describe('wend, patches and mini sudoku', () => {
+  // These three are verbatim from real shares.
+  const WEND = 'Wend #98 | 0:46 \u{1f300}\nWith no hints\n\u{1f3c5} I started a new streak today!\nlnkd.in/wend';
+  const PATCHES = 'Patches #181 | 0:28 \u{1f9f6}\nWith no hints & 5 redraws\nlnkd.in/patches';
+  const SUDOKU = 'Mini Sudoku #399 | 0:55 and flawless \u270f\ufe0f\nThe classic game, made mini. Handcrafted by the originators of \u201cSudoku.\u201d\nlnkd.in/minisudoku';
+
+  it('reads Wend as a clock and records the hint count', () => {
+    const [r] = parseShareText(WEND);
+    expect(r).toMatchObject({ game: 'wend', puzzleNumber: 98, seconds: 46, hints: 0 });
+  });
+
+  it('reads Patches despite the redraw count sharing the hints line', () => {
+    const [r] = parseShareText(PATCHES);
+    expect(r).toMatchObject({ game: 'patches', puzzleNumber: 181, seconds: 28, hints: 0 });
+  });
+
+  it('reads Mini Sudoku, whose name is two words', () => {
+    const [r] = parseShareText(SUDOKU);
+    expect(r).toMatchObject({ game: 'minisudoku', puzzleNumber: 399, seconds: 55 });
+  });
+
+  it('is not fooled by the marketing line that follows Mini Sudoku', () => {
+    expect(parseShareText(SUDOKU)).toHaveLength(1);
+  });
+
+  it('counts hints when some were taken', () => {
+    const [r] = parseShareText('Wend #98 | 1:12 \u{1f300}\nWith 2 hints');
+    expect(r).toMatchObject({ seconds: 72, hints: 2 });
+  });
+
+  it('pulls all three out of one paste', () => {
+    const games = parseShareText(`${WEND}\n\n${PATCHES}\n\n${SUDOKU}`).map((r) => r.game);
+    expect(games).toEqual(['wend', 'patches', 'minisudoku']);
+  });
+
+  it('ignores the trailing lnkd.in lines', () => {
+    expect(parseShareText('lnkd.in/wend\nlnkd.in/patches\nlnkd.in/minisudoku')).toEqual([]);
+  });
+});
+
 describe('mixed pastes', () => {
   const thread = `
 Wordle 1,562 4/6

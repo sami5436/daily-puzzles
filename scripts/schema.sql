@@ -11,10 +11,11 @@ create table if not exists results (
   id            serial primary key,
   player_id     int  not null references players(id) on delete cascade,
   game          text not null check (game in
-                   ('wordle','strands','queens','tango','zip','pinpoint','crossclimb')),
+                   ('wordle','strands','queens','tango','zip','wend','patches','minisudoku','pinpoint','crossclimb')),
   puzzle_date   date not null,
   puzzle_number int,
-  seconds       int,      -- timed games: queens, tango, zip, crossclimb
+  seconds       int,      -- timed games: queens, tango, zip, wend, patches,
+                          --              minisudoku, crossclimb
   guesses       int,      -- wordle (1..6, 7 = failed), pinpoint (1..5)
   hints         int,      -- strands
   solved        boolean not null default true,
