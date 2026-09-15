@@ -170,9 +170,10 @@ button.link:hover { color: var(--text); }
 .note { color: var(--muted); font-size: 12.5px; margin: 0; }
 .error { color: var(--p2); font-size: 13px; margin: 10px 0 0; }
 
-/* Streak grid */
-.grid { display: flex; gap: 3px; flex-wrap: wrap; }
-.cell { width: 11px; height: 11px; background: var(--rule); flex: none; }
+/* Streak grid. Fixed columns so eight weeks land as two even rows, and
+   fluid cells so it scales down to a phone without a horizontal scroll. */
+.grid { display: grid; grid-template-columns: repeat(28, 1fr); gap: 3px; }
+.cell { aspect-ratio: 1; background: var(--rule); }
 .cell.p1 { background: var(--p1); }
 .cell.p2 { background: var(--p2); }
 .cell.both { background: linear-gradient(135deg, var(--p1) 50%, var(--p2) 50%); }
