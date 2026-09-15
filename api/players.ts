@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fail, loadState, sql } from './_db';
+import { fail, loadState, sql } from './_db.js';
 
 /** Sets both player names. Two slots, no accounts, no login. */
 export default async function handler(req: VercelRequest, res: VercelResponse) {

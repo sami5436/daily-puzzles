@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fail, loadState, sql, validDate, validEntry } from './_db';
+import { fail, loadState, sql, validDate, validEntry } from './_db.js';
 
 /**
  * Saves a batch of parsed results for one player on one date.
