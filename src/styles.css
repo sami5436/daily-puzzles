@@ -461,3 +461,25 @@ button.primary.wide { width: 100%; }
 
 .swatch.tie { background: var(--rule-firm); }
 .swatch.none { background: var(--rule); }
+
+/* One tap paste, sized for a thumb. */
+.paste {
+  appearance: none;
+  margin-top: 12px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--rule-firm);
+  background: var(--bg);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 0;
+}
+.paste svg { width: 17px; height: 17px; flex: none; }
+.paste:hover { color: var(--text); border-color: var(--text); }
+.paste:focus-visible { outline: 2px solid var(--text); outline-offset: -2px; }

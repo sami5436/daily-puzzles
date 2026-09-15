@@ -69,4 +69,16 @@ for i, colour in enumerate((TEXT, P1, P2, TEXT)):
     di.rectangle([x, y, x + q, y + q], fill=colour)
 icon.save("public/icon.png", optimize=True)
 
+# Larger icon for the web app manifest.
+S2 = 512
+big = Image.new("RGB", (S2, S2), BG)
+db = ImageDraw.Draw(big)
+q2, g2 = 148, 40
+o2 = (S2 - (q2 * 2 + g2)) // 2
+for i, colour in enumerate((TEXT, P1, P2, TEXT)):
+    x = o2 + (i % 2) * (q2 + g2)
+    y = o2 + (i // 2) * (q2 + g2)
+    db.rectangle([x, y, x + q2, y + q2], fill=colour)
+big.save("public/icon-512.png", optimize=True)
+
 print("wrote public/og.png and public/icon.png")

@@ -23,6 +23,23 @@ const prettyToday = new Date().toLocaleDateString(undefined, {
   weekday: 'long', month: 'long', day: 'numeric',
 });
 
+/**
+ * Android can share straight into the app through the manifest's share target,
+ * which arrives as a query parameter. Read it once and strip it, so a refresh
+ * does not refill the box with something already saved.
+ */
+function sharedText(): string {
+  if (typeof window === 'undefined') return '';
+  const params = new URLSearchParams(window.location.search);
+  const text = [params.get('title'), params.get('text'), params.get('url')]
+    .filter((v): v is string => Boolean(v))
+    .join('\n');
+  if (text) window.history.replaceState({}, '', window.location.pathname);
+  return text;
+}
+
+const shared = sharedText();
+
 export default function App() {
   const [state, setState] = useState<AppState | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -127,7 +144,7 @@ function Board({ p1, p2, standings, todayRow, rest, theme, onToggleTheme,
 
       <Standings p1={p1} p2={p2} standings={standings} />
       <TodayTable p1={p1} p2={p2} row={todayRow} heading="Today" onDelete={onDelete} />
-      <LogPanel p1={p1} p2={p2} onSave={onSave} />
+      <LogPanel p1={p1} p2={p2} onSave={onSave} initialText={shared} />
 
       <div className="folds">
         <Collapsible id="streaks" title="Last eight weeks">
