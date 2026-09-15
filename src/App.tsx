@@ -9,6 +9,8 @@ import { LogPanel } from './components/LogPanel';
 import { StreakGrid } from './components/StreakGrid';
 import { GameStats } from './components/GameStats';
 import { History } from './components/History';
+import { ShareCard } from './components/ShareCard';
+import { ChartsModal } from './components/charts/ChartsModal';
 
 const today = isoDate();
 
@@ -19,6 +21,7 @@ const prettyToday = new Date().toLocaleDateString(undefined, {
 export default function App() {
   const [state, setState] = useState<AppState | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [charts, setCharts] = useState(false);
 
   useEffect(() => {
     api.getState()
@@ -83,10 +86,23 @@ export default function App() {
       <Standings p1={p1} p2={p2} standings={standings} />
       <TodayTable p1={p1} p2={p2} row={todayRow} heading="Today" onDelete={removeResult} />
       <LogPanel p1={p1} p2={p2} onSave={saveResults} />
+      <ShareCard p1={p1} p2={p2} row={todayRow} standings={standings} dateLabel={prettyToday} />
       {standings.days.length > 0 && <StreakGrid p1={p1} p2={p2} standings={standings} />}
       <GameStats p1={p1} p2={p2} standings={standings} />
       <History p1={p1} p2={p2} days={rest} />
+      <section className="analysis-cta">
+        <button className="primary wide" type="button" onClick={() => setCharts(true)}>
+          Open the analysis
+        </button>
+        <p className="note" style={{ marginTop: 10 }}>
+          Charts. For ten puzzles and two people.
+        </p>
+      </section>
       <Footer p1={p1} p2={p2} onRename={savePlayers} />
+      {charts && (
+        <ChartsModal onClose={() => setCharts(false)} p1={p1} p2={p2}
+                     standings={standings} results={state.results} />
+      )}
     </div>
   );
 }

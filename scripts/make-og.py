@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1200, 630
 BG, TEXT, MUTED, RULE = "#faf9f7", "#191817", "#75726d", "#d2cec6"
-P1, P2 = "#2f6b4f", "#a2542b"
+P1, P2 = "#2b6cb0", "#b8622c"
 
 SF = "/System/Library/Fonts/SFNS.ttf"
 FALLBACK = "/System/Library/Fonts/HelveticaNeue.ttc"
