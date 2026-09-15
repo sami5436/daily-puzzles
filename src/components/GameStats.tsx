@@ -32,7 +32,7 @@ export function GameStats({ p1, p2, standings }: { p1: Player; p2: Player; stand
                 <tr key={g.id}>
                   <td className="game">{g.label}</td>
                   <td className={`score num ${lead ? `won ${lead}` : ''}`}>
-                    {s.played > 0 ? `${s.a}–${s.b}` : <span className="blank">·</span>}
+                    {s.played > 0 ? `${s.a} to ${s.b}` : <span className="blank">·</span>}
                   </td>
                   <td className="score num">
                     {s.aAvg != null ? formatMetric(g.id, s.aAvg) : <span className="blank">·</span>}
