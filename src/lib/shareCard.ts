@@ -133,8 +133,9 @@ export function drawShareCard(canvas: HTMLCanvasElement, input: ShareCardInput):
 
   c.fillStyle = MUTED;
   c.font = font(28);
+  const days = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
   c.fillText(
-    `${p1.name} ${standings.daysWon.a} days  ·  ${p2.name} ${standings.daysWon.b} days`,
+    `${p1.name} ${days(standings.daysWon.a)}  ·  ${p2.name} ${days(standings.daysWon.b)}`,
     M,
     footTop + 112,
   );
