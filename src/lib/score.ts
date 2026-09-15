@@ -1,5 +1,5 @@
 import { GAME_IDS, gameMeta } from './games';
-import type { GameId, Player, StoredResult } from './types';
+import type { GameId, ParsedResult, Player, StoredResult } from './types';
 
 /** Local calendar date as YYYY-MM-DD. Never use toISOString, it shifts to UTC. */
 export function isoDate(d = new Date()): string {
@@ -13,7 +13,7 @@ export function addDays(iso: string, delta: number): string {
 }
 
 /** The comparable number for a result. Lower always wins. */
-export function metricValue(r: StoredResult): number | null {
+export function metricValue(r: ParsedResult): number | null {
   switch (gameMeta(r.game).metric) {
     case 'time':
       return r.seconds;
@@ -24,7 +24,7 @@ export function metricValue(r: StoredResult): number | null {
   }
 }
 
-export function formatScore(r: StoredResult): string {
+export function formatScore(r: ParsedResult): string {
   if (!r.solved && r.game === 'wordle') return 'X/6';
   switch (r.game) {
     case 'wordle':
@@ -189,4 +189,19 @@ export function streakFor(results: StoredResult[], playerId: number | undefined,
   }
 
   return { current, longest, playedDates };
+}
+
+/** Renders a bare metric number (a best or an average) in that game's units. */
+export function formatMetric(game: GameId, value: number | null): string {
+  if (value == null) return '';
+  switch (gameMeta(game).metric) {
+    case 'time':
+      return formatTime(Math.round(value));
+    case 'hints':
+      return value.toFixed(value % 1 === 0 ? 0 : 1);
+    case 'guesses':
+      return game === 'wordle'
+        ? `${value.toFixed(value % 1 === 0 ? 0 : 1)}/6`
+        : value.toFixed(value % 1 === 0 ? 0 : 1);
+  }
 }
