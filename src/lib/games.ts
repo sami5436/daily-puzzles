@@ -14,6 +14,9 @@ export const GAMES: GameMeta[] = [
   { id: 'queens', label: 'Queens', metric: 'time', source: 'LinkedIn' },
   { id: 'tango', label: 'Tango', metric: 'time', source: 'LinkedIn' },
   { id: 'zip', label: 'Zip', metric: 'time', source: 'LinkedIn' },
+  { id: 'wend', label: 'Wend', metric: 'time', source: 'LinkedIn' },
+  { id: 'patches', label: 'Patches', metric: 'time', source: 'LinkedIn' },
+  { id: 'minisudoku', label: 'Mini Sudoku', metric: 'time', source: 'LinkedIn' },
   { id: 'crossclimb', label: 'Crossclimb', metric: 'time', source: 'LinkedIn' },
   { id: 'pinpoint', label: 'Pinpoint', metric: 'guesses', source: 'LinkedIn' },
 ];

@@ -13,10 +13,13 @@ Paste the share text, it reads the scores, it keeps the record.
 | Queens | LinkedIn | time |
 | Tango | LinkedIn | time |
 | Zip | LinkedIn | time |
+| Wend | LinkedIn | time |
+| Patches | LinkedIn | time |
+| Mini Sudoku | LinkedIn | time |
 | Crossclimb | LinkedIn | time |
 | Pinpoint | LinkedIn | guesses |
 
-Every metric is lower is better, so one comparison rule covers all seven.
+Every metric is lower is better, so one comparison rule covers all ten.
 Each game is its own head to head, the winner takes a point, and whoever
 wins more games wins the day.
 
@@ -43,7 +46,8 @@ npm run typecheck
 npm run build
 ```
 
-The schema lives in `scripts/schema.sql`.
+The schema lives in `scripts/schema.sql`, and changes to it since the first
+deploy are in `scripts/migrations/`.
 
 ## The parser
 

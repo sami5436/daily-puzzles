@@ -4,6 +4,9 @@ export type GameId =
   | 'queens'
   | 'tango'
   | 'zip'
+  | 'wend'
+  | 'patches'
+  | 'minisudoku'
   | 'pinpoint'
   | 'crossclimb';
 

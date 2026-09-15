@@ -7,7 +7,8 @@ if (!url) throw new Error('DATABASE_URL is not set');
 export const sql = neon(url);
 
 export const GAME_IDS = [
-  'wordle', 'strands', 'queens', 'tango', 'zip', 'pinpoint', 'crossclimb',
+  'wordle', 'strands', 'queens', 'tango', 'zip', 'wend', 'patches', 'minisudoku',
+  'pinpoint', 'crossclimb',
 ] as const;
 
 export type GameId = (typeof GAME_IDS)[number];
