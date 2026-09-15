@@ -10,11 +10,12 @@ function label(date: string) {
 }
 
 export function History({ p1, p2, days }: { p1: Player; p2: Player; days: DayRow[] }) {
-  if (days.length === 0) return null;
+  if (days.length === 0) {
+    return <p className="note">Only today so far.</p>;
+  }
 
   return (
-    <section>
-      <h2>Every day</h2>
+    <>
       <div className="scroller">
         <table>
           <thead>
@@ -41,6 +42,6 @@ export function History({ p1, p2, days }: { p1: Player; p2: Player; days: DayRow
           </tbody>
         </table>
       </div>
-    </section>
+    </>
   );
 }

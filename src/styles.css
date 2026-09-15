@@ -20,21 +20,44 @@
   --pad: 20px;
 }
 
+/* Dark is a selected set of tokens, not an inverted light set. The system
+   preference applies only while no explicit choice is stored, so the toggle
+   wins in both directions. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg:       #16161a;
-    --surface:  #1d1d22;
-    --text:     #ececea;
-    --muted:    #9a968f;
-    --faint:    #6a675f;
-    --rule:     #2c2c32;
-    --rule-firm:#3a3a42;
+  :root:not([data-theme="light"]) {
+  --bg:       #16161a;
+  --surface:  #1d1d22;
+  --text:     #ececea;
+  --muted:    #9a968f;
+  --faint:    #6a675f;
+  --rule:     #2c2c32;
+  --rule-firm:#3a3a42;
 
-    --p1:       #3987e5;   /* protan deltaE 26.8 against --p2 on this surface */
-    --p2:       #d95926;
-    --p1-soft:  #16202c;
-    --p2-soft:  #2a1d15;
+  --p1:       #3987e5;   /* protan deltaE 26.8 against --p2 on this surface */
+  --p2:       #d95926;
+  --p1-soft:  #16202c;
+  --p2-soft:  #2a1d15;
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:       #16161a;
+  --surface:  #1d1d22;
+  --text:     #ececea;
+  --muted:    #9a968f;
+  --faint:    #6a675f;
+  --rule:     #2c2c32;
+  --rule-firm:#3a3a42;
+
+  --p1:       #3987e5;   /* protan deltaE 26.8 against --p2 on this surface */
+  --p2:       #d95926;
+  --p1-soft:  #16202c;
+  --p2-soft:  #2a1d15;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -339,3 +362,102 @@ button.primary.wide { width: 100%; }
   max-width: 90vw;
 }
 .tip-head { font-weight: 600; }
+
+/* ---------- Masthead ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.logo { display: block; flex: none; }
+.actions { display: flex; align-items: center; gap: 2px; flex: none; }
+
+/* Comfortably tappable without drawing a heavy button. */
+.icon-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 0;
+}
+.icon-btn svg { width: 21px; height: 21px; display: block; }
+.icon-btn:hover { color: var(--text); }
+.icon-btn:active { background: var(--rule); }
+.icon-btn:disabled { opacity: 0.3; cursor: default; }
+.icon-btn:focus-visible { outline: 2px solid var(--text); outline-offset: -3px; }
+
+.masthead { align-items: center; padding-bottom: 12px; }
+
+.toast {
+  margin: 10px 0 0;
+  padding: 8px 11px;
+  background: var(--surface);
+  border: 1px solid var(--rule-firm);
+}
+
+/* ---------- Collapsible sections ---------- */
+.folds { margin-top: 32px; border-top: 1px solid var(--rule); }
+.fold { margin: 0; border-bottom: 1px solid var(--rule); }
+
+.fold-head {
+  appearance: none;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 0;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 0;
+}
+.fold-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.fold-head:hover .fold-title { color: var(--text); }
+.fold-head:focus-visible { outline: 2px solid var(--text); outline-offset: -2px; }
+
+.chev {
+  width: 16px; height: 16px;
+  color: var(--faint);
+  flex: none;
+  transition: transform 140ms ease;
+}
+.chev.open { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+
+.fold-body { padding-bottom: 22px; }
+
+/* ---------- Extra chart marks ---------- */
+.radar-p1 { fill: var(--p1); fill-opacity: 0.14; stroke: var(--p1); stroke-width: 2; stroke-linejoin: round; }
+.radar-p2 { fill: var(--p2); fill-opacity: 0.14; stroke: var(--p2); stroke-width: 2; stroke-linejoin: round; }
+
+.mean-line { stroke: var(--text); stroke-width: 1.5; }
+
+.cell-p1 { fill: var(--p1); }
+.cell-p2 { fill: var(--p2); }
+.cell-tie { fill: var(--rule-firm); }
+.cell-none { fill: var(--rule); }
+
+.swatch.tie { background: var(--rule-firm); }
+.swatch.none { background: var(--rule); }

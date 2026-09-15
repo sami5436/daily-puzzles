@@ -7,6 +7,10 @@ import type { Player, StoredResult } from '../../lib/types';
 import { MarginChart } from './MarginChart';
 import { TrendChart } from './TrendChart';
 import { CumulativeChart } from './CumulativeChart';
+import { RadarChart } from './RadarChart';
+import { HeatmapChart } from './HeatmapChart';
+import { DistributionChart } from './DistributionChart';
+import { RatingChart } from './RatingChart';
 
 function Tile({ value, label }: { value: string; label: string }) {
   return (
@@ -101,15 +105,48 @@ export function ChartsModal({ onClose, p1, p2, standings, results }: {
           </section>
 
           <section className="chart-section">
+            <h3>Strength profile</h3>
+            <p className="chart-sub">
+              The same shares on one axis per game. The two shapes are complementary by
+              construction, so this is a silhouette to recognise rather than a figure to read.
+            </p>
+            <RadarChart days={standings.days} p1={p1.name} p2={p2.name} />
+          </section>
+
+          <section className="chart-section">
+            <h3>Results grid</h3>
+            <p className="chart-sub">Who took each game on each day.</p>
+            <HeatmapChart days={standings.days} p1={p1.name} p2={p2.name} />
+          </section>
+
+          <section className="chart-section">
             <h3>Scores over time</h3>
             <p className="chart-sub">Raw scores in each game's own units. One game at a time.</p>
             <TrendChart days={standings.days} p1={p1.name} p2={p2.name} />
           </section>
 
           <section className="chart-section">
+            <h3>Margin distribution</h3>
+            <p className="chart-sub">
+              Every head to head as one dot, with the mean marked. Shows whether a lead comes
+              from a few blowouts or from being steadily ahead.
+            </p>
+            <DistributionChart days={standings.days} p1={p1.name} p2={p2.name} />
+          </section>
+
+          <section className="chart-section">
             <h3>Games won, cumulative</h3>
             <p className="chart-sub">Every head to head either of you has won, added up day by day.</p>
             <CumulativeChart days={standings.days} p1={p1.name} p2={p2.name} />
+          </section>
+
+          <section className="chart-section">
+            <h3>Elo rating</h3>
+            <p className="chart-sub">
+              Chess ratings, applied to two people and a word game. Elo assumes a large pool of
+              players over a long record, which this is the opposite of. Computed properly anyway.
+            </p>
+            <RatingChart days={standings.days} p1={p1.name} p2={p2.name} />
           </section>
 
           <section className="chart-section">
