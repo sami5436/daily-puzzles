@@ -34,7 +34,7 @@ export function History({ p1, p2, days }: { p1: Player; p2: Player; days: DayRow
                 <td className={`score num ${row.winner === 'p1' ? 'won p1' : row.winner === 'p2' ? 'won p2' : ''}`}>
                   {row.winner === 'tie'
                     ? 'level'
-                    : `${row.winner === 'p1' ? p1.name : p2.name} ${Math.max(row.aWins, row.bWins)}–${Math.min(row.aWins, row.bWins)}`}
+                    : `${row.winner === 'p1' ? p1.name : p2.name} ${Math.max(row.aWins, row.bWins)} to ${Math.min(row.aWins, row.bWins)}`}
                 </td>
               </tr>
             ))}
